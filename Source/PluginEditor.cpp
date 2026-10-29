@@ -29,7 +29,6 @@ void OpalysAudioProcessorEditor::ModuleTabButton::paintButton(juce::Graphics& g,
 
 OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p)
-bypassButton.setClickingTogglesState(true);
 {
     setLookAndFeel(&lookAndFeel);
     setSize(1180, 760);
@@ -64,7 +63,13 @@ bypassButton.setClickingTogglesState(true);
     setupMacroSlider(macroEspacio); setupMacroSlider(macroEco); setupMacroSlider(macroMovimiento);
     setupMacroSlider(masterLowCut); setupMacroSlider(masterHighCut); setupMacroSlider(masterVolume);
 
-    // Enlaces seguros (Attachments) para evitar fallos de memoria en FL Studio
+    // El boton de bypass debe ser tipo "toggle" para que el attachment funcione
+    bypassButton.setClickingTogglesState(true);
+    addAndMakeVisible(bypassButton);
+    addAndMakeVisible(panicButton);
+    panicButton.onClick = [this] { audioProcessor.triggerPanic(); };
+
+    // Enlaces seguros (Attachments)
     attCuerpo     = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_cuerpo", macroCuerpo);
     attAire       = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_aire", macroAire);
     attSuciedad   = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_suciedad", macroSuciedad);
@@ -94,10 +99,6 @@ bypassButton.setClickingTogglesState(true);
         };
         addAndMakeVisible(*rackButtons[i]);
     }
-
-   
-    addAndMakeVisible(panicButton);
-    panicButton.onClick = [this] { audioProcessor.triggerPanic(); };
 
     startTimerHz(60);
 }

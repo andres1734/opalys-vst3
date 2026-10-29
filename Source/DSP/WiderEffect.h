@@ -4,22 +4,11 @@
 
 namespace opalys::dsp
 {
-    class EffectBase
+    class WiderEffect
     {
     public:
         void prepare(const juce::dsp::ProcessSpec& spec) { juce::ignoreUnused(spec); }
         void reset() {}
         void processBlock(juce::AudioBuffer<float>& buffer) noexcept { juce::ignoreUnused(buffer); }
     };
-
-    // Definiciones individuales para que coincidan con el procesador
-    class SaturationEffect : public EffectBase {};
-    class TapeEffect       : public EffectBase {};
-    class GranularSparkles : public EffectBase {};
-    class DelayEffect      : public EffectBase {};
-    class ReverbEffect     : public EffectBase {};
-    class WiderEffect      : public EffectBase {};
-    class EnhancerEffect   : public EffectBase {};
-    class PitchEffect      : public EffectBase {};
-    class RicochetEffect   : public EffectBase {};
 }

@@ -6,7 +6,7 @@
 #include "OpalysLookAndFeel.h"
 
 class OpalysAudioProcessorEditor final : public juce::AudioProcessorEditor,
-                                         private juce::Timer
+                                       private juce::Timer
 {
 public:
     explicit OpalysAudioProcessorEditor(OpalysAudioProcessor&);
@@ -33,8 +33,16 @@ private:
     juce::TextButton nextPresetBtn { ">" };
     juce::TextButton settingsBtn { "Ajustes" };
 
+    // Sliders de Macros y Master
     juce::Slider macroCuerpo, macroAire, macroSuciedad;
     juce::Slider macroEspacio, macroEco, macroMovimiento;
+    juce::Slider masterLowCut, masterHighCut, masterVolume;
+
+    // ATTACHMENTS (Indispensable para evitar crashes al mover perillas o cambiar presets)
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attCuerpo, attAire, attSuciedad;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attEspacio, attEco, attMovimiento;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attLowCut, attHighCut, attVolume;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> attBypass;
 
     struct ModuleTabButton : public juce::Button
     {
@@ -48,7 +56,6 @@ private:
 
     std::array<std::unique_ptr<ModuleTabButton>, 10> rackButtons;
 
-    juce::Slider masterLowCut, masterHighCut, masterVolume;
     juce::TextButton bypassButton { "Bypass" };
     juce::TextButton panicButton  { "Panico" };
 

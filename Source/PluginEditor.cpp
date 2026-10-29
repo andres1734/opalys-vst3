@@ -31,7 +31,6 @@ OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p)
 {
     setLookAndFeel(&lookAndFeel);
-    setSize(1180, 760);
 
     brandLabel.setText("O", juce::dontSendNotification);
     brandLabel.setFont(juce::FontOptions(16.0f, juce::Font::bold));
@@ -100,6 +99,8 @@ OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
         addAndMakeVisible(*rackButtons[i]);
     }
 
+    // setSize llama a resized(), asi que va al final, cuando todo ya existe
+    setSize(1180, 760);
     startTimerHz(60);
 }
 
@@ -171,6 +172,10 @@ void OpalysAudioProcessorEditor::paint(juce::Graphics& g)
 
 void OpalysAudioProcessorEditor::resized()
 {
+    // Seguridad: si los botones del rack aun no existen, no hacer nada
+    if (rackButtons[9] == nullptr)
+        return;
+
     auto total = getLocalBounds().reduced(16);
     auto topBar = total.removeFromTop(40);
     brandLabel.setBounds(topBar.removeFromLeft(30));

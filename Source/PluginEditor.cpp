@@ -99,8 +99,13 @@ OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
         addAndMakeVisible(*rackButtons[i]);
     }
 
+    // Ventana redimensionable con proporcion fija (diseno base 1180x760)
+    setResizable(true, true);
+    setResizeLimits(650, 419, 1400, 902);
+    getConstrainer()->setFixedAspectRatio(1180.0 / 760.0);
+
     // setSize llama a resized(), asi que va al final, cuando todo ya existe
-    setSize(1180, 760);
+    setSize(900, 580);
     startTimerHz(60);
 }
 
@@ -154,20 +159,24 @@ void OpalysAudioProcessorEditor::paint(juce::Graphics& g)
 {
     g.fillAll(findColour(juce::ResizableWindow::backgroundColourId));
 
-    auto drawCard = [&g](juce::Rectangle<float> bounds) {
+    const float s = static_cast<float>(getWidth()) / 1180.0f;   // factor de escala
+
+    auto drawCard = [&g, s](juce::Rectangle<float> bounds) {
         g.setColour(juce::Colour(0x150f172a));
-        g.fillRoundedRectangle(bounds.translated(0.0f, 2.0f), 10.0f);
+        g.fillRoundedRectangle(bounds.translated(0.0f, 2.0f * s), 10.0f * s);
         g.setColour(juce::Colour(0xffffffff));
-        g.fillRoundedRectangle(bounds, 10.0f);
+        g.fillRoundedRectangle(bounds, 10.0f * s);
         g.setColour(juce::Colour(0xffe2e8f0));
-        g.drawRoundedRectangle(bounds, 10.0f, 1.0f);
+        g.drawRoundedRectangle(bounds, 10.0f * s, 1.0f);
     };
 
-    drawCard(juce::Rectangle<float>(16.0f, 60.0f, getWidth() - 32.0f, 230.0f));
-    const auto ellipseArea = juce::Rectangle<float>(getWidth() * 0.5f - 240.0f, 75.0f, 480.0f, 175.0f);
+    const float w = static_cast<float>(getWidth());
+
+    drawCard(juce::Rectangle<float>(16.0f * s, 60.0f * s, w - 32.0f * s, 230.0f * s));
+    const auto ellipseArea = juce::Rectangle<float>(w * 0.5f - 240.0f * s, 75.0f * s, 480.0f * s, 175.0f * s);
     drawPlasmaVisualizer(g, ellipseArea);
-    drawCard(juce::Rectangle<float>(16.0f, 305.0f, getWidth() - 32.0f, 280.0f));
-    drawCard(juce::Rectangle<float>(16.0f, 600.0f, getWidth() - 32.0f, 145.0f));
+    drawCard(juce::Rectangle<float>(16.0f * s, 305.0f * s, w - 32.0f * s, 280.0f * s));
+    drawCard(juce::Rectangle<float>(16.0f * s, 600.0f * s, w - 32.0f * s, 145.0f * s));
 }
 
 void OpalysAudioProcessorEditor::resized()
@@ -176,43 +185,48 @@ void OpalysAudioProcessorEditor::resized()
     if (rackButtons[9] == nullptr)
         return;
 
-    auto total = getLocalBounds().reduced(16);
-    auto topBar = total.removeFromTop(40);
-    brandLabel.setBounds(topBar.removeFromLeft(30));
-    pluginTitleLabel.setBounds(topBar.removeFromLeft(240));
-    powerButton.setBounds(topBar.removeFromLeft(90).reduced(2));
+    const float s = static_cast<float>(getWidth()) / 1180.0f;   // factor de escala
+    auto S = [s](float v) { return juce::roundToInt(v * s); };
 
-    settingsBtn.setBounds(topBar.removeFromRight(80).reduced(2));
-    nextPresetBtn.setBounds(topBar.removeFromRight(30).reduced(2));
-    presetSelector.setBounds(topBar.removeFromRight(260).reduced(2));
-    prevPresetBtn.setBounds(topBar.removeFromRight(30).reduced(2));
+    auto total = getLocalBounds().reduced(S(16.0f));
+    auto topBar = total.removeFromTop(S(40.0f));
+    brandLabel.setBounds(topBar.removeFromLeft(S(30.0f)));
+    pluginTitleLabel.setBounds(topBar.removeFromLeft(S(240.0f)));
+    powerButton.setBounds(topBar.removeFromLeft(S(90.0f)).reduced(2));
 
-    const int macroW = 75;
-    const int macroY = 120;
-    macroCuerpo.setBounds(35, macroY, macroW, 85);
-    macroAire.setBounds(120, macroY, macroW, 85);
-    macroSuciedad.setBounds(205, macroY, macroW, 85);
+    settingsBtn.setBounds(topBar.removeFromRight(S(80.0f)).reduced(2));
+    nextPresetBtn.setBounds(topBar.removeFromRight(S(30.0f)).reduced(2));
+    presetSelector.setBounds(topBar.removeFromRight(S(260.0f)).reduced(2));
+    prevPresetBtn.setBounds(topBar.removeFromRight(S(30.0f)).reduced(2));
 
-    const int rightStartX = getWidth() - 295;
-    macroEspacio.setBounds(rightStartX, macroY, macroW, 85);
-    macroEco.setBounds(rightStartX + 85, macroY, macroW, 85);
-    macroMovimiento.setBounds(rightStartX + 170, macroY, macroW, 85);
+    const int macroW = S(75.0f);
+    const int macroH = S(85.0f);
+    const int macroY = S(120.0f);
+    macroCuerpo.setBounds(S(35.0f),  macroY, macroW, macroH);
+    macroAire.setBounds(S(120.0f),   macroY, macroW, macroH);
+    macroSuciedad.setBounds(S(205.0f), macroY, macroW, macroH);
 
-    auto bottomArea = total.removeFromBottom(130);
-    auto rackRow = bottomArea.removeFromTop(52);
-    const int tabWidth = (rackRow.getWidth() - 9 * 6) / 10;
+    const int rightStartX = getWidth() - S(295.0f);
+    macroEspacio.setBounds(rightStartX,                 macroY, macroW, macroH);
+    macroEco.setBounds(rightStartX + S(85.0f),          macroY, macroW, macroH);
+    macroMovimiento.setBounds(rightStartX + S(170.0f),  macroY, macroW, macroH);
+
+    auto bottomArea = total.removeFromBottom(S(130.0f));
+    auto rackRow = bottomArea.removeFromTop(S(52.0f));
+    const int gap = S(6.0f);
+    const int tabWidth = (rackRow.getWidth() - 9 * gap) / 10;
     for (int i = 0; i < 10; ++i)
     {
         rackButtons[i]->setBounds(rackRow.removeFromLeft(tabWidth));
-        rackRow.removeFromLeft(6);
+        rackRow.removeFromLeft(gap);
     }
 
-    bottomArea.removeFromTop(8);
+    bottomArea.removeFromTop(S(8.0f));
     auto masterRow = bottomArea;
-    masterLowCut.setBounds(masterRow.removeFromLeft(75));
-    masterHighCut.setBounds(masterRow.removeFromLeft(75));
-    masterVolume.setBounds(masterRow.removeFromLeft(75));
+    masterLowCut.setBounds(masterRow.removeFromLeft(macroW));
+    masterHighCut.setBounds(masterRow.removeFromLeft(macroW));
+    masterVolume.setBounds(masterRow.removeFromLeft(macroW));
 
-    panicButton.setBounds(masterRow.removeFromRight(85).reduced(4));
-    bypassButton.setBounds(masterRow.removeFromRight(85).reduced(4));
+    panicButton.setBounds(masterRow.removeFromRight(S(85.0f)).reduced(4));
+    bypassButton.setBounds(masterRow.removeFromRight(S(85.0f)).reduced(4));
 }

@@ -9,11 +9,8 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-      
+
     steps:
-    - name: Listar archivos generados
-      shell: pwsh
-      run: Get-ChildItem -Path build -Recurse -Include *.vst3,*.exe | Select-Object -ExpandProperty FullName
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
@@ -22,14 +19,24 @@ jobs:
     - name: Configure CMake
       run: cmake -B build -DCMAKE_BUILD_TYPE=Release
 
+    - name: Build Plugin (Release)
+      run: cmake --build build --config Release
+
+    - name: Listar archivos generados
+      shell: pwsh
+      run: |
+        Get-ChildItem -Path build -Recurse -Include *.vst3,*.exe -ErrorAction SilentlyContinue | Select-Object -ExpandProperty FullName
+
     - name: Upload VST3 Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Opalys-VST3-Windows
         path: build/Opalys_artefacts/Release/VST3/
+        if-no-files-found: warn
 
     - name: Upload Standalone Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Opalys-Standalone-Windows
         path: build/Opalys_artefacts/Release/Standalone/
+        if-no-files-found: warn

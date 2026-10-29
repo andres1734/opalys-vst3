@@ -1,8 +1,9 @@
+#include "PluginProcessor.h"
 #include "PluginEditor.h"
 
 void OpalysAudioProcessorEditor::ModuleTabButton::paintButton(juce::Graphics& g,
-                                                              bool shouldDrawButtonAsHighlighted,
-                                                              bool shouldDrawButtonAsDown)
+                                                             bool shouldDrawButtonAsHighlighted,
+                                                             bool shouldDrawButtonAsDown)
 {
     auto bounds = getLocalBounds().toFloat().reduced(1.0f);
     const float corner = 8.0f;
@@ -60,6 +61,20 @@ OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
 
     setupMacroSlider(macroCuerpo); setupMacroSlider(macroAire); setupMacroSlider(macroSuciedad);
     setupMacroSlider(macroEspacio); setupMacroSlider(macroEco); setupMacroSlider(macroMovimiento);
+    setupMacroSlider(masterLowCut); setupMacroSlider(masterHighCut); setupMacroSlider(masterVolume);
+
+    // Enlaces seguros (Attachments) para evitar fallos de memoria en FL Studio
+    attCuerpo     = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_cuerpo", macroCuerpo);
+    attAire       = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_aire", macroAire);
+    attSuciedad   = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_suciedad", macroSuciedad);
+    attEspacio    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_espacio", macroEspacio);
+    attEco        = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_eco", macroEco);
+    attMovimiento = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "macro_movimiento", macroMovimiento);
+
+    attLowCut     = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "master_lowcut", masterLowCut);
+    attHighCut    = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "master_highcut", masterHighCut);
+    attVolume     = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.apvts, "master_gain", masterVolume);
+    attBypass     = std::make_unique<juce::AudioProcessorValueTreeState::ButtonAttachment>(audioProcessor.apvts, "master_bypass", bypassButton);
 
     const juce::String moduleNames[10] = {
         "01 Sat", "02 Tape", "03 Spark", "04 Delay", "05 Reverb",
@@ -79,7 +94,6 @@ OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
         addAndMakeVisible(*rackButtons[i]);
     }
 
-    setupMacroSlider(masterLowCut); setupMacroSlider(masterHighCut); setupMacroSlider(masterVolume);
     addAndMakeVisible(bypassButton);
     addAndMakeVisible(panicButton);
     panicButton.onClick = [this] { audioProcessor.triggerPanic(); };

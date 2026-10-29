@@ -121,6 +121,14 @@ bool OpalysAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) co
         && layouts.getMainInputChannelSet()  == layouts.getMainOutputChannelSet();
 }
 
+void OpalysAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
+{
+    auto state = apvts.copyState();
+    std::unique_ptr<juce::XmlElement> xml(state.createXml());
+    if (xml != nullptr)
+        copyXmlToBinary(*xml, destData);
+}
+
 void OpalysAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
     if (data == nullptr || sizeInBytes <= 0)

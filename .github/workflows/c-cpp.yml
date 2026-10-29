@@ -9,8 +9,11 @@ on:
 jobs:
   build:
     runs-on: windows-latest
-
+      
     steps:
+    - name: Listar archivos generados
+      shell: pwsh
+      run: Get-ChildItem -Path build -Recurse -Include *.vst3,*.exe | Select-Object -ExpandProperty FullName
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
@@ -23,10 +26,10 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: Opalys-VST3-Windows
-        path: build/**/*.vst3
+        path: build/Opalys_artefacts/Release/VST3/
 
     - name: Upload Standalone Artifact
       uses: actions/upload-artifact@v4
       with:
         name: Opalys-Standalone-Windows
-        path: build/**/Standalone/Opalys.exe
+        path: build/Opalys_artefacts/Release/Standalone/

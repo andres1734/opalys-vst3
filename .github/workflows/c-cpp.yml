@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: Build VST3 Plugin
 
 on:
   push:
@@ -8,16 +8,22 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: configure
-      run: ./configure
-    - name: make
-      run: make
-    - name: make check
-      run: make check
-    - name: make distcheck
-      run: make distcheck
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Configure CMake
+      run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+    - name: Build Plugin (Release)
+      run: cmake --build build --config Release
+
+    - name: Upload VST3 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Opalys-VST3-Windows
+        path: build/**/*.vst3

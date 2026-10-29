@@ -124,24 +124,36 @@ juce::AudioProcessorEditor* OpalysAudioProcessor::createEditor()
     return new OpalysAudioProcessorEditor(*this);
 }
 
-void OpalysAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
+bool OpalysAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
 {
-    // Guardado básico seguro
-    auto state = apvts.copyState();
-    std::unique_ptr<juce::XmlElement> xml (state.createXml());
-    if (xml != nullptr)
-        copyXmlToBinary (*xml, destData);
+    return layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo()
+        && layouts.getMainInputChannelSet()  == layouts.getMainOutputChannelSet();
 }
 
 void OpalysAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    // Carga ultra segura: si hay cualquier error en los datos, los ignora en vez de crashear
-    std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
-    if (xmlState != nullptr)
+    if (data == nullptr || sizeInBytes <= 0)
+        return;
+
+    std::unique_ptr<juce::XmlElement> xml(getXmlFromBinary(data, sizeInBytes));
+    if (xml == nullptr || ! xml->hasTagName(apvts.state.getType()))
+        return;
+
+    auto tree = juce::ValueTree::fromXml(*xml);
+    if (! tree.isValid())
+        return;
+
+    for (auto child : tree)
     {
-        auto tree = juce::ValueTree::fromXml (*xmlState);
-        if (tree.isValid())
-            apvts.replaceState (tree);
+        if (! child.hasType("PARAM"))
+            continue;
+
+        const auto id = child.getProperty("id").toString();
+        if (auto* p = apvts.getParameter(id))
+        {
+            const float v = (float) child.getProperty("value", p->convertFrom0to1(p->getDefaultValue()));
+            p->setValueNotifyingHost(juce::jlimit(0.0f, 1.0f, p->convertTo0to1(v)));
+        }
     }
 }
 

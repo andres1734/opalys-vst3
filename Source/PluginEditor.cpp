@@ -95,7 +95,7 @@ bypassButton.setClickingTogglesState(true);
         addAndMakeVisible(*rackButtons[i]);
     }
 
-    addAndMakeVisible(bypassButton);
+   
     addAndMakeVisible(panicButton);
     panicButton.onClick = [this] { audioProcessor.triggerPanic(); };
 

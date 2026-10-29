@@ -38,7 +38,7 @@ OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
     brandLabel.setColour(juce::Label::textColourId, juce::Colour(0xff2563eb));
     addAndMakeVisible(brandLabel);
 
-    pluginTitleLabel.setText("Opalys - Motor Multiefectos", juce::dontSendNotification);
+    pluginTitleLabel.setText("Opalys v2 - Motor Multiefectos", juce::dontSendNotification);
     pluginTitleLabel.setFont(juce::FontOptions(14.0f, juce::Font::bold));
     addAndMakeVisible(pluginTitleLabel);
 

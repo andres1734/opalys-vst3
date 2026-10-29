@@ -29,6 +29,7 @@ void OpalysAudioProcessorEditor::ModuleTabButton::paintButton(juce::Graphics& g,
 
 OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p)
+bypassButton.setClickingTogglesState(true);
 {
     setLookAndFeel(&lookAndFeel);
     setSize(1180, 760);

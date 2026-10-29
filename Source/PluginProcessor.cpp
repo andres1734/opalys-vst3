@@ -33,7 +33,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout OpalysAudioProcessor::create
 void OpalysAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
     juce::dsp::ProcessSpec spec;
-    spec.sampleRate       = sampleRate;
+    spec.sampleRate        = sampleRate;
     spec.maximumBlockSize = static_cast<juce::uint32>(samplesPerBlock);
     spec.numChannels      = static_cast<juce::uint32>(getTotalNumOutputChannels());
 
@@ -79,18 +79,25 @@ void OpalysAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
         return;
     }
 
-    if (*apvts.getRawParameterValue("master_bypass") > 0.5f)
+    auto* bypassParam = apvts.getRawParameterValue("master_bypass");
+    if (bypassParam != nullptr && *bypassParam > 0.5f)
         return;
 
     double currentPpq = 0.0;
-    if (auto* playHead = getPlayHead())
-        if (auto pos = playHead->getPosition())
+    if (auto* ph = getPlayHead())
+    {
+        if (auto pos = ph->getPosition())
+        {
             if (pos->getPpqPosition().hasValue())
                 currentPpq = *pos->getPpqPosition();
+        }
+    }
 
     for (size_t slot = 0; slot < 10; ++slot)
     {
         const uint8_t moduleId = moduleOrder[slot].load(std::memory_order_acquire);
+        if (moduleId > 9) continue;
+
         switch (moduleId)
         {
             case 0: saturationFX.processBlock(buffer); break;
@@ -107,7 +114,8 @@ void OpalysAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::
         }
     }
 
-    const float masterGain = juce::Decibels::decibelsToGain(apvts.getRawParameterValue("master_gain")->load());
+    auto* gainParam = apvts.getRawParameterValue("master_gain");
+    const float masterGain = juce::Decibels::decibelsToGain(gainParam != nullptr ? gainParam->load() : 0.0f);
     buffer.applyGain(masterGain);
 }
 
@@ -119,15 +127,30 @@ juce::AudioProcessorEditor* OpalysAudioProcessor::createEditor()
 void OpalysAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
     auto state = apvts.copyState();
-    std::unique_ptr<juce::XmlElement> xml(state.createXml());
-    copyXmlToBinary(*xml, destData);
+    if (state.isValid())
+    {
+        std::unique_ptr<juce::XmlElement> xml(state.createXml());
+        if (xml != nullptr)
+        {
+            copyXmlToBinary(*xml, destData);
+        }
+    }
 }
 
 void OpalysAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
+    if (sizeInBytes <= 0 || data == nullptr)
+        return;
+
     std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
     if (xmlState != nullptr && xmlState->hasTagName(apvts.state.getType()))
-        apvts.replaceState(juce::ValueTree::fromXml(*xmlState));
+    {
+        auto tree = juce::ValueTree::fromXml(*xmlState);
+        if (tree.isValid())
+        {
+            apvts.replaceState(tree);
+        }
+    }
 }
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()

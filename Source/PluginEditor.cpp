@@ -103,6 +103,7 @@ OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
 
 OpalysAudioProcessorEditor::~OpalysAudioProcessorEditor()
 {
+    stopTimer();
     setLookAndFeel(nullptr);
 }
 

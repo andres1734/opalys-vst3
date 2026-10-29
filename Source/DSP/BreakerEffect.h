@@ -9,10 +9,6 @@ namespace opalys::dsp
     public:
         void prepare(const juce::dsp::ProcessSpec& spec) { juce::ignoreUnused(spec); }
         void reset() {}
-        
-        void processBlock(juce::AudioBuffer<float>& buffer, double ppq) noexcept
-        {
-            juce::ignoreUnused(buffer, ppq);
-        }
+        void processBlock(juce::AudioBuffer<float>& buffer, double ppq) noexcept { juce::ignoreUnused(buffer, ppq); }
     };
 }

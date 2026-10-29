@@ -64,9 +64,9 @@ target_compile_definitions(Opalys
 )
 
 if (MSVC)
-    target_compile_options(Opalys PRIVATE /W4 /arch:AVX2 /fp:fast /utf-8)
+    target_compile_options(Opalys PRIVATE /W4 /utf-8)
 else()
-    target_compile_options(Opalys PRIVATE -Wall -Wextra -O3 -ffast-math)
+    target_compile_options(Opalys PRIVATE -Wall -Wextra)
 endif()
 
 target_link_libraries(Opalys

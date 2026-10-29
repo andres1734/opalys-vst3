@@ -126,30 +126,22 @@ juce::AudioProcessorEditor* OpalysAudioProcessor::createEditor()
 
 void OpalysAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
 {
+    // Guardado básico seguro
     auto state = apvts.copyState();
-    if (state.isValid())
-    {
-        std::unique_ptr<juce::XmlElement> xml(state.createXml());
-        if (xml != nullptr)
-        {
-            copyXmlToBinary(*xml, destData);
-        }
-    }
+    std::unique_ptr<juce::XmlElement> xml (state.createXml());
+    if (xml != nullptr)
+        copyXmlToBinary (*xml, destData);
 }
 
 void OpalysAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
 {
-    if (sizeInBytes <= 0 || data == nullptr)
-        return;
-
-    std::unique_ptr<juce::XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-    if (xmlState != nullptr && xmlState->hasTagName(apvts.state.getType()))
+    // Carga ultra segura: si hay cualquier error en los datos, los ignora en vez de crashear
+    std::unique_ptr<juce::XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+    if (xmlState != nullptr)
     {
-        auto tree = juce::ValueTree::fromXml(*xmlState);
+        auto tree = juce::ValueTree::fromXml (*xmlState);
         if (tree.isValid())
-        {
-            apvts.replaceState(tree);
-        }
+            apvts.replaceState (tree);
     }
 }
 

@@ -38,11 +38,7 @@ private:
     juce::Slider macroEspacio, macroEco, macroMovimiento;
     juce::Slider masterLowCut, masterHighCut, masterVolume;
 
-    // ATTACHMENTS (Indispensable para evitar crashes al mover perillas o cambiar presets)
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attCuerpo, attAire, attSuciedad;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attEspacio, attEco, attMovimiento;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attLowCut, attHighCut, attVolume;
-    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> attBypass;
+ 
 
     struct ModuleTabButton : public juce::Button
     {
@@ -58,6 +54,10 @@ private:
 
     juce::TextButton bypassButton { "Bypass" };
     juce::TextButton panicButton  { "Panico" };
-
+       // ATTACHMENTS (Indispensable para evitar crashes al mover perillas o cambiar presets)
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attCuerpo, attAire, attSuciedad;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attEspacio, attEco, attMovimiento;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> attLowCut, attHighCut, attVolume;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::ButtonAttachment> attBypass;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(OpalysAudioProcessorEditor)
 };

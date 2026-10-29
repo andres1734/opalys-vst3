@@ -47,16 +47,7 @@ void OpalysAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 
 void OpalysAudioProcessor::releaseResources() {}
 
-bool OpalysAudioProcessor::isBusesLayoutSupported(const BusesLayout& layouts) const
-{
-    return layouts.getMainOutputChannelSet() == juce::AudioChannelSet::stereo();
-}
 
-void OpalysAudioProcessor::setModuleOrder(const std::array<uint8_t, 10>& newOrder) noexcept
-{
-    for (size_t i = 0; i < 10; ++i)
-        moduleOrder[i].store(newOrder[i], std::memory_order_release);
-}
 
 std::array<uint8_t, 10> OpalysAudioProcessor::getModuleOrder() const noexcept
 {

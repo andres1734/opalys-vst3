@@ -195,9 +195,9 @@ void OpalysAudioProcessorEditor::resized()
     powerButton.setBounds(topBar.removeFromLeft(S(90.0f)).reduced(2));
 
     settingsBtn.setBounds(topBar.removeFromRight(S(80.0f)).reduced(2));
-    nextPresetBtn.setBounds(topBar.removeFromRight(S(30.0f)).reduced(2));
+    nextPresetBtn.setBounds(topBar.removeFromRight(S(40.0f)).reduced(2));
     presetSelector.setBounds(topBar.removeFromRight(S(260.0f)).reduced(2));
-    prevPresetBtn.setBounds(topBar.removeFromRight(S(30.0f)).reduced(2));
+    prevPresetBtn.setBounds(topBar.removeFromRight(S(40.0f)).reduced(2));
 
     const int macroW = S(75.0f);
     const int macroH = S(85.0f);

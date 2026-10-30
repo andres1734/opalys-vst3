@@ -55,6 +55,13 @@ OpalysAudioProcessorEditor::OpalysAudioProcessorEditor(OpalysAudioProcessor& p)
     auto setupMacroSlider = [this](juce::Slider& s) {
         s.setSliderStyle(juce::Slider::RotaryHorizontalVerticalDrag);
         s.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 55, 16);
+
+        // Colores del texto de valor puestos aqui directamente (visibles sobre fondo blanco)
+        s.setColour(juce::Slider::textBoxTextColourId,       juce::Colour(0xff0f172a));
+        s.setColour(juce::Slider::textBoxBackgroundColourId, juce::Colours::transparentWhite);
+        s.setColour(juce::Slider::textBoxOutlineColourId,    juce::Colours::transparentWhite);
+        s.setColour(juce::Slider::textBoxHighlightColourId,  juce::Colour(0x402563eb));
+
         addAndMakeVisible(s);
     };
 
